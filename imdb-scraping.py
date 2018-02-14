@@ -96,16 +96,18 @@ def continueProg(question):
 #Setup
 print('\nProgram för att skrapa webbsida\n\n')
 # url to listing site
-url = 'http://www.imdb.com/chart/top?ref_=nv_mv_250_6';
+# 1 url = 'http://www.imdb.com/chart/top?ref_=nv_mv_250_6';
 # 2 url = 'http://www.imdb.com/chart/top-indian-movies?ref_=nv_mv_250_in_7';
 # 3 url = 'http://www.imdb.com/movies-in-theaters/?ref_=cs_inth'
-#url = 'http://www.imdb.com/movies-coming-soon/?ref_=inth_cs'
+# 4 url = 'http://www.imdb.com/movies-coming-soon/?ref_=inth_cs'
+url = 'http://www.imdb.com/movies-coming-soon/2018-05/'
 data = []
 # 1 outFileName = 'top-rated-movies-01.json'
 # 2 outFileName = 'top-rated-inidan-movies-01.json'
 # 3 outFileName = 'movies-in-theaters.json'
-#outFileName = 'movies-coming-soon.json'
-outFileName = 'db.json'
+# 4 outFileName = 'movies-coming-soon.json'
+outFileName = 'movies-coming-soon-02.json'
+# outFileName = 'db.json'
 count = 0
 
 #url = str(input('Ange url: '))
@@ -117,19 +119,22 @@ print('Sidtitel: ')
 print(pageTitle)	
 
 # Follow links to detail pages
-movieLinks = navSoup.select('.titleColumn > a')
-#movieLinks = navSoup.find_all('h4', itemprop='name')
+# top-rated-movies has different structure
+# movieLinks = navSoup.select('.titleColumn > a')
+
+movieLinks = navSoup.find_all('h4', itemprop='name')
 #print(movieLinks)
-for index, link in enumerate(movieLinks, 1):
+for index, link in enumerate(movieLinks, 86):
 	print('movie ' + str(index))
-	#a = link.find('a')
-	movieUrl = baseUrl + link.get('href')
-	print(movieUrl)
+	# print(link)
+	a = link.find('a')
+	movieUrl = baseUrl + a.get('href')
+	# print(movieUrl)
 	soup = makeSoup(connect(movieUrl))	
 
 	pageTitle = soup.title.string
-	#print('Sidtitel: ')
-	#print(pageTitle)
+	print('Sidtitel: ')
+	print(pageTitle)
 
 	# Movie title
 	getMovieTitle = soup.find_all(itemprop='name')
@@ -172,22 +177,26 @@ for index, link in enumerate(movieLinks, 1):
 	# Poster image
 	getPoster = soup.find('div', class_='poster')
 	posterUrl = '' if getPoster is None else baseUrl + getPoster.find('a').get('href')
-	posterUrlParse = urlparse(posterUrl)
-	posterUrlFormat = posterUrlParse.scheme + "://" + posterUrlParse.netloc + posterUrlParse.path
-	print(posterUrlFormat)
+	if posterUrl != '':
+		posterUrlParse = urlparse(posterUrl)
+		posterUrlFormat = posterUrlParse.scheme + "://" + posterUrlParse.netloc + posterUrlParse.path
+		# print(posterUrlFormat)
 
-	print(posterUrlFormat)
-	posterGallerySoup = makeSoup(connect(posterUrlFormat))	
-	posterLgUrl = posterGallerySoup.find_all('meta', itemprop='image')[0]['content']
-	print(posterLgUrl)
+		posterGallerySoup = makeSoup(connect(posterUrlFormat))	
+		posterLgUrl = posterGallerySoup.find_all('meta', itemprop='image')[0]['content']
+		# print(posterLgUrl)
 
-	poster = setFileName(posterLgUrl)
-	#poster = urlify(movieTitle) + '-poster.jpg'
-	print(poster)
+		poster = setFileName(posterLgUrl)
+		#poster = urlify(movieTitle) + '-poster.jpg'
+		# print(poster)
+	else: 
+		poster = ''
+		posterLgUrl = ''
 
 	# Description
 	getStoryline = soup.find('div', id='titleStoryLine')
-	storyline = '' if getStoryline is None else getStoryline.find('div', itemprop='description').text.strip(' \t\n\r')
+	storylineElement = '' if getStoryline is None else getStoryline.find('div', itemprop='description')
+	storyline = '' if storylineElement is None else storylineElement.text.strip(' \t\n\r')
 	print(storyline)
 
 	# Actors

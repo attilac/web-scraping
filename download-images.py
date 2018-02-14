@@ -75,8 +75,8 @@ folderPath = '/Users/attilacederbygd/code/pylab/movie-database/images/'
 #jsonFile = 'top-rated-movies-02.json'
 #jsonFile = 'top-rated-inidan-movies-01.json'
 #jsonFile = 'movies-in-theaters.json'
-#jsonFile = 'movies-coming-soon.json'
-jsonFile = 'db.json'
+jsonFile = 'movies-coming-soon.json'
+# jsonFile = 'db.json'
 
 count = 0
 with open(jsonFile) as dataFile:    
